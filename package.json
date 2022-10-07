@@ -4,7 +4,8 @@
   "description": "dsf",
   "main": "index.js",
   "scripts": {
-    "start-cli": "node ./src/client/client-cli/index.js",
+    "cli-single-player": "node ./src/client/client-cli/index.js single-player",
+    "cli-multi-player": "node ./src/client/client-cli/index.js multi-player -s localhost",
     "test": "jest --verbose --coverage"
   },
   "repository": {
@@ -28,6 +29,10 @@
     "socket.io-client": "^4.5.2",
     "syllable": "^4.1.0",
     "syllable-checker": "github:rmccrear/syllable-length-checker",
+    "uuid": "^9.0.0",
     "yargs": "^17.6.0"
+  },
+  "devDependencies": {
+    "@jest/types": "^29.1.2"
   }
 }
