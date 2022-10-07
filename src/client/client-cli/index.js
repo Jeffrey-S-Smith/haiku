@@ -6,8 +6,8 @@ const cli = require("./cli.js");
 yargs.version("0.1.0");
 // Create add command
 yargs
-.command({
-    command: "start",
+  .command({
+    command: "multi-player",
     describe: "Start a game on the server",
     builder: {
       server: {
@@ -20,7 +20,16 @@ yargs
 
     // Function for your command
     handler(argv) {
-      cli.start(argv.server);
+      cli.startMultiPlayer(argv.server);
+    },
+  })
+  .command({
+    command: "single-player",
+    describe: "Start single player game",
+    // Function for your command
+    handler(argv) {
+      console.log("handler");
+      cli.startSinglePlayer();
     },
   })
   .demandCommand();

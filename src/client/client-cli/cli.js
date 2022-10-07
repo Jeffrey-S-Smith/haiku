@@ -35,7 +35,7 @@ Choose the next word to put into the Haiku: `;
   return askForNextWord;
 };
 
-const start = async (server) => {
+const startSinglePlayer = async (server) => {
   const { username } = await promptForUsername();
   const theHaiku = new Haiku();
   console.log(chalk.blue(`Welcome to Haiku lightening, ${username}!`));
@@ -60,7 +60,11 @@ const start = async (server) => {
   console.log(theHaiku.displayAsText());
 };
 
-const cli = { start };
+const startMultiPlayer = () => {
+  console.log("coming soon...");
+};
+
+const cli = { startSinglePlayer, startMultiPlayer };
 
 module.exports = cli;
 // export default cli;
