@@ -1,5 +1,13 @@
+/*
+import inquirer from "inquirer";
+import axios from "axios";
+import chalk from "chalk";
+import Haiku from "./Haiku";
+*/
 const inquirer = require("inquirer");
 const axios = require("axios");
+const chalk = require("chalk");
+const Haiku = require("../lib/Haiku");
 
 const q = (type, name, message) => {
   return { type, name, message };
@@ -27,48 +35,32 @@ Choose the next word to put into the Haiku: `;
   return askForNextWord;
 };
 
-// a structure for a haiku in progress
-class Haiku {
-  constructor(lines, linePosition, nextWord) {
-    this.lines = lines || [[], [], []];
-    this.linePosition = linePosition || 0; // which line are we currently working on?
-    this.nextWord = "" || nextWord; // to send to server
-  }
-  tryWord(word) {
-    // hold off on adding word to the haiku until it is checked.
-    this.nextWord = word;
-    return true;
-  }
-  acceptWord() {
-    // we can check and accept it here.
-    this.lines[this.linePosition].push(this.nextWord);
-  }
-  displayAsText() {
-    const lines = this.lines.map((line) => line.join(" "));
-    return lines.join("\n");
-  }
-}
-
 const start = async (server) => {
   const { username } = await promptForUsername();
   const theHaiku = new Haiku();
-  console.log(`Welcome to Haiku lightening, ${username}!`);
+  console.log(chalk.blue(`Welcome to Haiku lightening, ${username}!`));
   console.log(`Please wait while we assign you to a team.`);
-  let finished = false;
-  while (!finished) {
+  while (!theHaiku.finished) {
     const { nextWord } = await promptForWord(username, theHaiku.lines);
-    if (nextWord === "end") break;
-    if (nextWord === "endline") {
-      theHaiku.linePosition++;
-      continue;
+    //     if (nextWord === "end") break;
+    //     if (nextWord === "endline") {
+    //       theHaiku.linePosition++;
+    //       continue;
+    //     }
+    const tryIsOk = theHaiku.tryWord(nextWord);
+    if (tryIsOk) {
+      theHaiku.acceptWord();
+    } else {
+      console.log(chalk.red(`The computer says "${nextWord}" cannot be used.`));
     }
-    theHaiku.tryWord(nextWord);
-    theHaiku.acceptWord();
   }
-  console.log(`congratulations, ${username}, you have finished the Haiku!`);
+  console.log(
+    chalk.green(`congratulations, ${username}, you have finished the Haiku!`)
+  );
   console.log(theHaiku.displayAsText());
 };
 
 const cli = { start };
 
 module.exports = cli;
+// export default cli;
