@@ -6,7 +6,7 @@ const cli = require("./cli.js");
 yargs.version("0.1.0");
 // Create add command
 yargs
-  .command({
+.command({
     command: "start",
     describe: "Start a game on the server",
     builder: {
@@ -26,3 +26,4 @@ yargs
   .demandCommand();
 
 yargs.parse();
+
