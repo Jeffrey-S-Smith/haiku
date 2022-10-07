@@ -17,7 +17,7 @@ const handleGame = (socket) => (clientList) => {
       payload.haiku.acceptWord(payload);
     })
   }
-
+  socket.emit('end', payload);
 }
 
 function lineChecker(arr){
