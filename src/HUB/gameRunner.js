@@ -1,7 +1,7 @@
 'use strict';
 
 const { enSyllableChecker } = require("syllable-checker");
-const Haiku = require('./Haiku.js')
+const Haiku = require('../client/lib/Haiku.js');
 
 
 const handleGame = (socket) => (clientList) => {
