@@ -8,6 +8,7 @@ const inquirer = require("inquirer");
 const axios = require("axios");
 const chalk = require("chalk");
 const Haiku = require("../lib/Haiku");
+const { v4: uuid } = require("uuid");
 
 const q = (type, name, message) => {
   return { type, name, message };
@@ -60,8 +61,34 @@ const startSinglePlayer = async (server) => {
   console.log(theHaiku.displayAsText());
 };
 
-const startMultiPlayer = () => {
+const Player = require("./lib/Player");
+const startMultiPlayer = async () => {
   console.log("coming soon...");
+  const { username } = await promptForUsername();
+  const theHaiku = new Haiku();
+  const player = new Player();
+  const gameId = uuid();
+  player.setUsernameAndJoin(gameId, username);
+  console.log(chalk.blue(`Welcome to Haiku lightening, ${username}!`));
+  console.log(`Please wait while we assign you to a team.`);
+  while (!theHaiku.finished) {
+    const { nextWord } = await promptForWord(username, theHaiku.lines);
+    //     if (nextWord === "end") break;
+    //     if (nextWord === "endline") {
+    //       theHaiku.linePosition++;
+    //       continue;
+    //     }
+    const tryIsOk = theHaiku.tryWord(nextWord);
+    if (tryIsOk) {
+      theHaiku.acceptWord();
+    } else {
+      console.log(chalk.red(`The computer says "${nextWord}" cannot be used.`));
+    }
+  }
+  console.log(
+    chalk.green(`congratulations, ${username}, you have finished the Haiku!`)
+  );
+  console.log(theHaiku.displayAsText());
 };
 
 const cli = { startSinglePlayer, startMultiPlayer };
