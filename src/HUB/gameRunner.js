@@ -6,8 +6,17 @@ const handleGame= (socket) => (clientList, gameId, server) => {
   let payload = {
     friends: clientList,
     turn: 0,
-    haiku: new Haiku(),
+    haiku: new Haiku().toJson,
   }
+  // 1
+  // send `game-starting` to all players
+  // 2
+  // send `turn` and haiku.toJson
+  // start listening for `turn-response` event from clients
+  //        listener will respond by sending `turn` event to clients
+
+  server.to(gameId).emit('game-starting');
+  
   while(!haikuChecker(payload.haiku.lines)){
     payload.turn++;
 

@@ -16,7 +16,7 @@ class Player {
     });
   }
   onGameStart(fn) {
-    this.io.on("game-start", fn);
+    this.io.on("game", fn);
   }
   onTurn(fn) {
     this.io.on("turn", fn);

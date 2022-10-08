@@ -47,6 +47,15 @@ class Haiku {
     const lines = this.lines.map((line) => line.join(" "));
     return lines.join("\n");
   }
+  toJson(){
+    let json = {
+      lines: this.lines,
+      linePosition: this.linePosition,
+      nextWord: this.nextWord,
+      finished: this.finished
+    }
+    return json;
+  }
 }
 
 // check if the next word fits

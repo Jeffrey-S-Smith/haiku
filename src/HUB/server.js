@@ -19,7 +19,8 @@ haiku.on('connection', (socket) => {
     clientList.push(payload.username);
     if(clientList.length === 3){
       //start the game
-      handleGame(clientList, payload.gameId, haiku);
+      console.log("starting game with players: ", clientList.join(", "));
+      handleGame(clientList, payload.gameId);
     }
   });
 });

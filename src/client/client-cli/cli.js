@@ -68,6 +68,11 @@ const joinConfirmed = (data, player) => {
   GAME_STATE.joined = true;
 };
 
+const gameStarting = (data, player) => {
+  GAME_STATE.started = true;
+  GAhhhaikuJson = data.haiku;
+}
+
 const GAME_STATE = {
   joined: false,
 };
@@ -77,6 +82,7 @@ const startMultiPlayer = async (server, gameName) => {
   const gameIo = io("http://localhost:3002/haiku"); // server
   const player = new Player(gameIo);
   player.onJoinGame(joinConfirmed);
+  player.onGameStart((data) => console.log);
   const { username } = await promptForUsername();
   player.setUsernameAndJoin(gameId, username);
   console.log(chalk.blue(`Welcome to Haiku lightening, ${username}!`));
@@ -86,26 +92,38 @@ const startMultiPlayer = async (server, gameName) => {
   await pollForEvent(GAME_STATE, (state) => state.joined === true);
   console.log(chalk.red(`You have joined the game.`));
 
-  const theHaiku = new Haiku();
-
-  while (!theHaiku.finished) {
-    const { nextWord } = await promptForWord(username, theHaiku.lines);
-    //     if (nextWord === "end") break;
-    //     if (nextWord === "endline") {
-    //       theHaiku.linePosition++;
-    //       continue;
-    //     }
-    const tryIsOk = theHaiku.tryWord(nextWord);
-    if (tryIsOk) {
-      theHaiku.acceptWord();
-    } else {
-      console.log(chalk.red(`The computer says "${nextWord}" cannot be used.`));
+  gameIo.on('turn', (payload)=>{
+    const theHaiku = new Haiku(payload.haiku);
+    let currentTurn = payload.turn%3 -1;
+    let checkForYourTurn = payload.friends[turn]
+    if(checkForYourTurn === username){
+      let ifWordPass = false
+      //runs a while loop to let the client 
+      //try words until the word fits in the haiku, then that clients turn ends
+      while (!checkWordPass) {
+        const { nextWord } = await promptForWord(username, theHaiku.lines);
+        //     if (nextWord === "end") break;
+        //     if (nextWord === "endline") {
+        //       theHaiku.linePosition++;
+        //       continue;
+        //     }
+        const tryIsOk = theHaiku.tryWord(nextWord);
+        if (tryIsOk) {
+          theHaiku.acceptWord();
+          checkWordPass = true
+        } else {
+          console.log(chalk.red(`The computer says "${nextWord}" cannot be used.`));
+        }
+      }
+      console.log(
+        chalk.green(`congratulations, ${username}, you have submitted a word to the Haiku!`)
+      );
+      console.log(theHaiku.displayAsText());
+      //emit turn, with the nextWord as the payload
+      gameIo.emit('game', nextWord);
     }
-  }
-  console.log(
-    chalk.green(`congratulations, ${username}, you have finished the Haiku!`)
-  );
-  console.log(theHaiku.displayAsText());
+    
+  })
 };
 
 const pollForEvent = (obj, fn) => {
