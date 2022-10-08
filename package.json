@@ -6,6 +6,7 @@
   "scripts": {
     "cli-single-player": "node ./src/client/client-cli/index.js single-player",
     "cli-multi-player": "node ./src/client/client-cli/index.js multi-player -s localhost",
+    "server": "node ./src/HUB/server.js",
     "test": "jest --verbose --coverage"
   },
   "repository": {
