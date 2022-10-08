@@ -10,6 +10,11 @@ yargs
     command: "multi-player",
     describe: "Start a game on the server",
     builder: {
+      gameName: {
+        describe: "Server address e.g. https://...",
+        alias: "g",
+        type: "string",
+      },
       server: {
         describe: "Server address e.g. https://...",
         alias: "s",
@@ -20,7 +25,7 @@ yargs
 
     // Function for your command
     handler(argv) {
-      cli.startMultiPlayer(argv.server);
+      cli.startMultiPlayer(argv.server, argv.gameName);
     },
   })
   .command({
@@ -35,4 +40,3 @@ yargs
   .demandCommand();
 
 yargs.parse();
-
