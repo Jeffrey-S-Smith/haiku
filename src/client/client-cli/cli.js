@@ -61,7 +61,7 @@ const startSinglePlayer = async (server) => {
   console.log(theHaiku.displayAsText());
 };
 
-const Player = require("./lib/Player");
+const Player = require("../lib/Player");
 const startMultiPlayer = async () => {
   console.log("coming soon...");
   const { username } = await promptForUsername();
@@ -71,6 +71,7 @@ const startMultiPlayer = async () => {
   player.setUsernameAndJoin(gameId, username);
   console.log(chalk.blue(`Welcome to Haiku lightening, ${username}!`));
   console.log(`Please wait while we assign you to a team.`);
+
   while (!theHaiku.finished) {
     const { nextWord } = await promptForWord(username, theHaiku.lines);
     //     if (nextWord === "end") break;
