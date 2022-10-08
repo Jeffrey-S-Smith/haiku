@@ -1,13 +1,8 @@
 'use strict';
 
-const { enSyllableChecker } = require("syllable-checker");
 const Haiku = require('../client/lib/Haiku.js');
 
-const io = require('socket.io');
-const PORT = process.env.PORT || 3002;
-const server = io(PORT).of('/haiku');
-
-const handleGame= (socket) => (clientList, gameId) => {
+const handleGame= (socket) => (clientList, gameId, server) => {
   let payload = {
     friends: clientList,
     turn: 0,
@@ -26,8 +21,6 @@ const handleGame= (socket) => (clientList, gameId) => {
 
 module.exports = {
   handleGame,
-  lineChecker,
-  haikuChecker,
 }
 
 // let test = haikuChecker([['real','real','yes'],["surely", "bird", 'are', 'not', 'real'],['real','real','yes']])
