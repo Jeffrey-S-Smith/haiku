@@ -8,6 +8,7 @@ const haiku = server.of('/haiku');
 const { handleGame } = require('./gameRunner');
 let clientList = [];
 
+console.log('Server is up!!!');
 haiku.on('connection', (socket) => {
   console.log('New Client connected!!');
 
@@ -18,7 +19,7 @@ haiku.on('connection', (socket) => {
     clientList.push(payload.username);
     if(clientList.length === 3){
       //start the game
-      handleGame(clientList, payload.gameId);
+      handleGame(clientList, payload.gameId, haiku);
     }
   });
 });
