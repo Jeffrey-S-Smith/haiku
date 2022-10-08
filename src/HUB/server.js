@@ -12,12 +12,13 @@ haiku.on('connection', (socket) => {
   console.log('New Client connected!!');
 
   haiku.on('join', (payload) => {
-    socket.join(payload.clientId);
-    console.log('Registered in room :', payload.clientId);
-    clientList.push(payload.clientName);
+    socket.join(payload.gameId);
+    socket.emit('welcome', {message:`Welcome to lightening Haiku ${payload.username}`})
+    console.log('Registered in room :', payload.gameId);
+    clientList.push(payload.username);
     if(clientList.length === 3){
       //start the game
-      handleGame(clientList);
+      handleGame(clientList, payload.gameId);
     }
   });
 });
