@@ -7,6 +7,8 @@ class Player {
       gameId,
       username,
     };
+    this.username = username;
+    this.gameId = gameId;
     this.io.emit("join", payload);
   }
   onJoinGame(fn) {
@@ -16,10 +18,16 @@ class Player {
     });
   }
   onGameStart(fn) {
-    this.io.on("game", fn);
+    this.io.on("game-starting", (data) => {
+      console.log("Player: game-starting");
+      fn(data, player);
+    });
   }
-  onTurn(fn) {
-    this.io.on("turn", fn);
+  onGameMove(fn) {
+    this.io.on("game", (data) => {
+      console.log("Player: game");
+      fn(data, player);
+    });
   }
   takeTurn(word) {
     this.io.emit("turn", { word });

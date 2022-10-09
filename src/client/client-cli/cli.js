@@ -62,15 +62,30 @@ const startSinglePlayer = async (server) => {
 };
 
 const Player = require("../lib/Player");
-const { object } = require("syllable-checker/dictionary/en/dict");
+// const { object } = require("syllable-checker/dictionary/en/dict");
 
 const joinConfirmed = (data, player) => {
   GAME_STATE.joined = true;
 };
 
 const gameStarting = (data, player) => {
-  GAME_STATE.started = true;
-  GAhhhaikuJson = data.haiku;
+  GAME_STATE.gameStarting = true;
+  GAME_STATE.haikuJson = data.haiku;
+}
+
+const gameMove = (payload, player) => {
+    GAME_STATE.gameStarting=true;
+    /*
+    console.log( chalk.blue('Its someone\s turn, lets find out who!'), payload);
+    const username = player.username;
+    const theHaiku = new Haiku(payload.haiku);
+    let currentTurn = payload.turn%3 -1;
+    let checkForYourTurn = payload.friends[turn]
+    if(checkForYourTurn === username){
+      let ifWordPass = false
+    }
+    */
+
 }
 
 const GAME_STATE = {
@@ -82,7 +97,9 @@ const startMultiPlayer = async (server, gameName) => {
   const gameIo = io("http://localhost:3002/haiku"); // server
   const player = new Player(gameIo);
   player.onJoinGame(joinConfirmed);
-  player.onGameStart((data) => console.log);
+  player.onGameStart(gameStarting);
+  player.onGameMove(gameMove);
+  gameIo.on('game', console.log);
   const { username } = await promptForUsername();
   player.setUsernameAndJoin(gameId, username);
   console.log(chalk.blue(`Welcome to Haiku lightening, ${username}!`));
@@ -91,8 +108,12 @@ const startMultiPlayer = async (server, gameName) => {
   );
   await pollForEvent(GAME_STATE, (state) => state.joined === true);
   console.log(chalk.red(`You have joined the game.`));
+  await pollForEvent(GAME_STATE, (state) => state.gameStarting === true);
+  console.log("game has started!");
 
-  gameIo.on('turn', (payload)=>{
+  /*
+  gameIo.on('game', async (payload)=>{
+    console.log( chalk.blue('Its someone\s turn, lets find out who!'), payload);
     const theHaiku = new Haiku(payload.haiku);
     let currentTurn = payload.turn%3 -1;
     let checkForYourTurn = payload.friends[turn]
@@ -120,10 +141,10 @@ const startMultiPlayer = async (server, gameName) => {
       );
       console.log(theHaiku.displayAsText());
       //emit turn, with the nextWord as the payload
-      gameIo.emit('game', nextWord);
+      gameIo.emit('turn', nextWord);
     }
-    
   })
+    */
 };
 
 const pollForEvent = (obj, fn) => {

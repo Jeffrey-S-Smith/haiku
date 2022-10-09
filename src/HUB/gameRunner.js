@@ -3,10 +3,14 @@
 const Haiku = require('../client/lib/Haiku.js');
 
 const handleGame= (socket) => (clientList, gameId, server) => {
-  let payload = {
-    friends: clientList,
-    turn: 0,
-    haiku: new Haiku().toJson,
+  const theHaiku = new Haiku();
+
+  const createPayload = () => {
+    return {
+      friends: clientList,
+      turn: 0,
+      haiku: theHaiku.toJson()
+    };
   }
   // 1
   // send `game-starting` to all players
@@ -14,10 +18,21 @@ const handleGame= (socket) => (clientList, gameId, server) => {
   // send `turn` and haiku.toJson
   // start listening for `turn-response` event from clients
   //        listener will respond by sending `turn` event to clients
+  socket.on('turn', (payload) => {
+      const word = payload.word;
+      theHaiku.tryWord(word);
+      theHaiku.acceptWord();
+      console.log(theHaiku.toJson())
+  })
 
-  server.to(gameId).emit('game-starting');
-  
-  while(!haikuChecker(payload.haiku.lines)){
+  console.log("in handleGame")
+  socket.emit('game-starting');
+  socket.emit('game', createPayload());
+  // socket.to(gameId).emit('game', createPayload());
+
+
+ /* 
+  while(theHaiku.finished !== true){
     payload.turn++;
 
     server.to(gameId).emit('game', payload);
@@ -26,6 +41,7 @@ const handleGame= (socket) => (clientList, gameId, server) => {
     })
   }
   socket.emit('end', payload);
+  */
 }
 
 module.exports = {
@@ -38,16 +54,4 @@ module.exports = {
 // let newTest = lineChecker(['real','real','yes']);
 // console.log(newTest)
 
-// function lineChecker(arr){
-//   let total = 0;
-//   arr.map(input=> total += enSyllableChecker(input));
-//   return total;
-// }
 
-// function haikuChecker(arr){
-//   if(lineChecker(arr[0])===5 && lineChecker(arr[1])=== 7 && lineChecker(arr[2])===5){
-//     return true
-//   } else {
-//     return false
-//   }
-// }

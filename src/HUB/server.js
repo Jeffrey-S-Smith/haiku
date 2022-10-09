@@ -17,10 +17,10 @@ haiku.on('connection', (socket) => {
     socket.emit('welcome', {message:`Welcome to lightening Haiku ${payload.username}`})
     console.log(`Registered  ${payload.username} in room: ${payload.gameId}` );
     clientList.push(payload.username);
-    if(clientList.length === 3){
+    if(clientList.length === 1){
       //start the game
       console.log("starting game with players: ", clientList.join(", "));
-      handleGame(clientList, payload.gameId);
+      handleGame(socket, haiku)(clientList, payload.gameId);
     }
   });
 });
