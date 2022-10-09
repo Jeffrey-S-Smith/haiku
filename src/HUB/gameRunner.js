@@ -2,21 +2,56 @@
 
 const Haiku = require('../client/lib/Haiku.js');
 
-const handleGame= (socket) => (clientList, gameId, server) => {
-  let payload = {
-    friends: clientList,
-    turn: 0,
-    haiku: new Haiku(),
+const sendToAllPlayers = (roster, event, payload) => {
+  for(let client of roster.clientList) {
+    console.log("username", client.profile.username)
+    console.log("client id", client.io.id)
+    console.log(payload)
+    client.io.emit(event, payload)
   }
-  while(!haikuChecker(payload.haiku.lines)){
-    payload.turn++;
+}
 
-    server.to(gameId).emit('game', payload);
-    socket.on('turn', (payload)=>{
-      payload.haiku.acceptWord(payload);
-    })
+const playersJoinRoom = (roster) => {
+  for(let client of roster.clientList) {
+    client.io.join(roster.roomId)
   }
-  socket.emit('end', payload);
+}
+
+const handleGame = (haikuSocket, roster, gameId) => {
+  const server = haikuSocket;
+  console.log("handle Game")
+  playersJoinRoom(roster);
+  const theHaiku = new Haiku();
+  
+  
+  const createPayload = () => {
+  let payload = {
+    friends: roster.clientList.map((client) => client.profile.username),
+    turn: 0,
+    haiku: theHaiku.toJSON(),
+  }
+    return payload;
+  }
+  
+  // server.to(gameId).emit('game-start', payload);
+  let payload = createPayload();
+
+  const handlePlayerTurn = (client) => (payload) => {
+      console.log(payload)
+      if(theHaiku.tryWord(payload.word)) {
+        theHaiku.acceptWord()
+        console.log(theHaiku.toJSON())
+        console.log("EMIT: next-turn to", gameId)
+        server.to(gameId).emit('next-turn', createPayload());
+      } else {
+        client.io.emit('word-not-accepted', {word: payload.word})
+      }
+  }
+  for(let client of roster.clientList){
+    client.io.on('turn', handlePlayerTurn(client))
+  }
+  server.to(gameId).emit('game', payload);
+  // socket.emit('end', payload);
 }
 
 module.exports = {

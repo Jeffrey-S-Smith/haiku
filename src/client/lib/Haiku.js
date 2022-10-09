@@ -47,6 +47,18 @@ class Haiku {
     const lines = this.lines.map((line) => line.join(" "));
     return lines.join("\n");
   }
+  toJSON(){
+    const lines = this.lines || [[], [], []];
+    const linePosition = this.linePosition || 0; // which line are we currently working on?
+    const nextWord = this.nextWord || ""; // to send to server
+    const finished = this.finished || false;
+    return {
+      lines,
+      linePosition,
+      nextWord,
+      finished
+    }
+  }
 }
 
 // check if the next word fits
