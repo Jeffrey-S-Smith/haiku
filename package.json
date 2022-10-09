@@ -34,6 +34,8 @@
     "yargs": "^17.6.0"
   },
   "devDependencies": {
-    "@jest/types": "^29.1.2"
+    "@jest/types": "^29.1.2",
+    "eslint": "^8.25.0",
+    "prettier": "^2.7.1"
   }
 }
