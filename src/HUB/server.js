@@ -1,15 +1,10 @@
 'use strict';
 
-const dotenv = require('dotenv')
-if (process.env && process.env.NODE_ENV==="development"){
-  dotenv.config({path: __dirname + '/.env.development'})
-}
+const STATIC_SERVER = process.env.APP_URL
 
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const {GameRoster, GameClient} = require("./GameRoster");
-const STATIC_SERVER = process.env.APP_URL
-const PORT = process.env.PORT || 3002;;
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -24,7 +19,6 @@ const { handleGame } = require('./gameRunner');
 // let clientList = [];
 const maxPlayers = 2;
 const gameRosters = { }
-console.log('Server is up!!! Port:', PORT);
 haikuSocket.on('connection', (socket) => {
   console.log('New Client connected!!');
 
@@ -73,9 +67,14 @@ haikuSocket.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log("listening on", PORT);
-});
+
+const start = (PORT) => {
+  server.listen(PORT, () => {
+    console.log("listening on", PORT);
+  });
+}
+
+module.exports = {start}
 
 // socket.emit('join', { clientId: 'Haiku Game 1', clientName: 'Jackson' })
 

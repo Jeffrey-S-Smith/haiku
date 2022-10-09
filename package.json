@@ -6,8 +6,8 @@
   "scripts": {
     "cli-single-player": "node ./src/client/client-cli/index.js single-player",
     "cli-multi-player": "node ./src/client/client-cli/index.js multi-player -s localhost",
-    "server": "NODE_ENV=production node ./src/HUB/server.js",
-    "dev-server": "NODE_ENV=development nodemon ./src/HUB/server.js",
+    "server": "NODE_ENV=production node ./index.js",
+    "dev-server": "NODE_ENV=development nodemon ./index.js",
     "test": "jest --verbose --coverage"
   },
   "repository": {
