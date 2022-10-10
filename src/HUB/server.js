@@ -40,7 +40,9 @@ haikuSocket.on('connection', (socket) => {
       client.setUsername(username)
       roster.addToGame(client)
       console.log("EMIT: welcome", payload.username )
-    socket.emit('welcome', {message:`Welcome to lightening Haiku ${payload.username}`})
+      const friendNameList = roster.clientList.map((c)=>c.profile.username)
+    socket.emit('welcome', {message:`Welcome to lightening Haiku ${payload.username}`, friends: friendNameList, maxPlayers})
+    sendToAllPlayers(roster, "player-join", {friends: friendNameList, maxPlayers})
     console.log(`Registered  ${payload.username} in room: ${payload.gameId}` );
       console.log(`clientList is now: ${roster.clientList.map(c=>c.profile.username)}`)
 
@@ -67,6 +69,14 @@ haikuSocket.on('connection', (socket) => {
   });
 });
 
+const sendToAllPlayers = (roster, event, payload) => {
+  for(let client of roster.clientList) {
+    console.log("username", client.profile.username)
+    console.log("client id", client.io.id)
+    console.log(payload)
+    client.io.emit(event, payload)
+  }
+}
 
 const start = (PORT) => {
   server.listen(PORT, () => {

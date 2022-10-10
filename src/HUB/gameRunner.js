@@ -2,14 +2,6 @@
 
 const Haiku = require('../client/lib/Haiku.js');
 
-const sendToAllPlayers = (roster, event, payload) => {
-  for(let client of roster.clientList) {
-    console.log("username", client.profile.username)
-    console.log("client id", client.io.id)
-    console.log(payload)
-    client.io.emit(event, payload)
-  }
-}
 
 const playersJoinRoom = (roster) => {
   for(let client of roster.clientList) {
