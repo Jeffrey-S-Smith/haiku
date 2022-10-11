@@ -16,10 +16,11 @@ const handleGame = (haikuSocket, roster, gameId) => {
   const theHaiku = new Haiku();
   
   
+  let turn = 0;
   const createPayload = () => {
   let payload = {
     friends: roster.clientList.map((client) => client.profile.username),
-    turn: 0,
+    turn,
     haiku: theHaiku.toJSON(),
   }
     return payload;
@@ -34,6 +35,7 @@ const handleGame = (haikuSocket, roster, gameId) => {
         theHaiku.acceptWord()
         console.log(theHaiku.toJSON())
         console.log("EMIT: next-turn to", gameId)
+        turn++;
         server.to(gameId).emit('next-turn', createPayload());
       } else {
         client.io.emit('word-not-accepted', {word: payload.word})
