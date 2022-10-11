@@ -1,64 +1,62 @@
-'use strict';
+"use strict";
 
-const Haiku = require('../client/lib/Haiku.js');
-
-const sendToAllPlayers = (roster, event, payload) => {
-  for(let client of roster.clientList) {
-    console.log("username", client.profile.username)
-    console.log("client id", client.io.id)
-    console.log(payload)
-    client.io.emit(event, payload)
-  }
-}
+const Haiku = require("../client/lib/Haiku.js");
+const { checkValidWord } = require("../client/lib/WordChecker");
 
 const playersJoinRoom = (roster) => {
-  for(let client of roster.clientList) {
-    client.io.join(roster.roomId)
+  for (let client of roster.clientList) {
+    client.io.join(roster.roomId);
   }
-}
+};
 
 const handleGame = (haikuSocket, roster, gameId) => {
   const server = haikuSocket;
-  console.log("handle Game")
+  console.log("handle Game");
   playersJoinRoom(roster);
   const theHaiku = new Haiku();
-  
-  
+
   let turn = 0;
   const createPayload = () => {
-  let payload = {
-    friends: roster.clientList.map((client) => client.profile.username),
-    turn,
-    haiku: theHaiku.toJSON(),
-  }
+    let payload = {
+      friends: roster.clientList.map((client) => client.profile.username),
+      turn,
+      haiku: theHaiku.toJSON(),
+    };
     return payload;
-  }
-  
+  };
+
   // server.to(gameId).emit('game-start', payload);
   let payload = createPayload();
 
   const handlePlayerTurn = (client) => (payload) => {
-      console.log(payload)
-      if(theHaiku.tryWord(payload.word)) {
-        theHaiku.acceptWord()
-        console.log(theHaiku.toJSON())
-        console.log("EMIT: next-turn to", gameId)
-        turn++;
-        server.to(gameId).emit('next-turn', createPayload());
-      } else {
-        client.io.emit('word-not-accepted', {word: payload.word})
-      }
+    console.log(payload);
+    const checkedWord = checkValidWord(payload.word);
+    if (checkedWord.valid === false) {
+      client.io.emit("word-not-accepted", {
+        word: payload.word,
+        message: checkedWord.message,
+      });
+    } else if (theHaiku.tryWord(payload.word)) {
+      theHaiku.acceptWord();
+      console.log(theHaiku.toJSON());
+      console.log("EMIT: next-turn to", gameId);
+      turn++;
+      server.to(gameId).emit("next-turn", createPayload());
+    } else {
+      const message = "word doesn't fit in haiku form.";
+      client.io.emit("word-not-accepted", { word: payload.word, message });
+    }
+  };
+  for (let client of roster.clientList) {
+    client.io.on("turn", handlePlayerTurn(client));
   }
-  for(let client of roster.clientList){
-    client.io.on('turn', handlePlayerTurn(client))
-  }
-  server.to(gameId).emit('game', payload);
+  server.to(gameId).emit("game", payload);
   // socket.emit('end', payload);
-}
+};
 
 module.exports = {
   handleGame,
-}
+};
 
 // let test = haikuChecker([['real','real','yes'],["surely", "bird", 'are', 'not', 'real'],['real','real','yes']])
 // console.log(test);
