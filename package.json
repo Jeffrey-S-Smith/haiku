@@ -27,7 +27,6 @@
     "dotenv": "^16.0.3",
     "inquirer": "^8.2.4",
     "random-word-slugs": "^0.1.6",
-    "socket-io": "^1.0.0",
     "socket.io": "^4.5.2",
     "socket.io-client": "^4.5.2",
     "syllable": "^4.1.0",
